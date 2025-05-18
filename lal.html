@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Best Friend!</title>
+  
+  <!-- External Libraries -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+      height: 100vh;
+    }
+    
+    /* Preloader */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .preloader-content {
+      text-align: center;
+    }
+    
+    .preloader h2 {
+      font-size: 3rem;
+      background: linear-gradient(45deg, #ff69b4, #00bfff, #ff1493, #ff8c00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 30px;
+      animation: colorChange 3s infinite;
+    }
+    
+    .loading-bar {
+      width: 300px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .loading-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(45deg, #ff69b4, #00bfff, #ff1493, #ff8c00);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+    
+    /* Main Content */
+    .main-content {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    
+    /* Birthday Name */
+    .birthday-name {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 10;
+      width: 100%;
+      opacity: 0;
+    }
+    
+    .birthday-name h1 {
+      font-size: 5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-shadow: 0 0 20px rgba(255, 20, 147, 0.8);
+      letter-spacing: 5px;
+      background: linear-gradient(45deg, #ff69b4, #00bfff, #ff1493, #ff8c00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+    
+    .birthday-name h2 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Cake Section */
+    .cake-section {
+      display: none;
+      position: relative;
+      height: 100vh;
+      background: transparent;
+      overflow: hidden;
+      text-align: center;
+      padding-top: 20vh;
+    }
+    
+    .cake-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+    
+    .cake {
+      position: relative;
+      width: 250px;
+      height: 200px;
+      background: #f8b0cf;
+      border-radius: 50% 50% 0 0;
+      margin: 0 auto;
+    }
+    
+    .cake-top {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 80px;
+      background: #ff69b4;
+      border-radius: 50%;
+      z-index: 2;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+    }
+    
+    .candle {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 40px;
+      background: #fff;
+      border-radius: 5px;
+      z-index: 3;
+    }
+    
+    .flame {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 30px;
+      background: #ffcc00;
+      border-radius: 50% 50% 20% 20%;
+      box-shadow: 0 0 20px #ff6a00, 0 0 40px #ff6a00, 0 0 60px #ff6a00;
+      z-index: 4;
+      animation: flicker 0.5s infinite alternate;
+    }
+    
+    @keyframes flicker {
+      0% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-50%) scale(1.1);
+        opacity: 0.8;
+      }
+    }
+    
+    /* Gallery Section */
+    .gallery-section {
+      display: none;
+      position: relative;
+      min-height: 100vh;
+      background: transparent;
+      padding: 50px 0;
+      overflow: hidden;
+    }
+    
+    .gallery-title {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .gallery-title h2 {
+      font-size: 3rem;
+      background: linear-gradient(45deg, #ff69b4, #00bfff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+    
+    .gallery-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 0 50px;
+      perspective: 1000px;
+    }
+    
+    .gallery-item {
+      width: 300px;
+      height: 370px;
+      object-fit: contain;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateY(0deg);
+      transition: transform 0.6s;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border-radius: 10px;
+      opacity: 0;
+    }
+    
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      transition: transform 0.5s ease;
+    }
+    
+    .gallery-item:hover img {
+      transform: scale(1.1);
+    }
+    
+    /* Message Section */
+    .message-section {
+      display: none;
+      position: relative;
+      min-height: 100vh;
+      background: transparent;
+      padding: 50px 20px;
+      text-align: center;
+    }
+    
+    .message-title {
+      margin-bottom: 40px;
+    }
+    
+    .message-title h2 {
+      font-size: 3rem;
+      color: #ff69b4;
+      text-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+      margin-bottom: 20px;
+    }
+    
+    .message-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    
+    .message-text {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      color: #fff;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    
+    .signature {
+      font-family: 'Brush Script MT', cursive;
+      font-size: 2rem;
+      color: #ff69b4;
+      text-shadow: 0 0 10px rgba(255, 105, 180, 0.8);
+    }
+    
+    /* Video Section */
+    .video-section {
+      display: none;
+      position: relative;
+      min-height: 100vh;
+      background: transparent;
+      padding: 50px 0;
+      text-align: center;
+    }
+    
+    .video-title {
+      margin-bottom: 40px;
+    }
+    
+    .video-title h2 {
+      font-size: 3rem;
+      background: linear-gradient(45deg, #ff69b4, #00bfff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+    
+    .video-container {
+      max-width: 800px;
+      margin: 0 auto;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    
+    .video-player {
+      width: 100%;
+      height: 450px;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 1.5rem;
+    }
+    
+    /* Final Section */
+    .final-section {
+      display: none;
+      position: relative;
+      height: 100vh;
+      background: transparent;
+      overflow: hidden;
+      text-align: center;
+      padding-top: 20vh;
+    }
+    
+    .final-message {
+      font-size: 4rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff69b4, #00bfff, #ff1493, #ff8c00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 30px;
+      opacity: 0;
+    }
+    
+    .restart-btn {
+      padding: 15px 40px;
+      background: linear-gradient(45deg, #ff69b4, #00bfff);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+      opacity: 0;
+    }
+    
+    .restart-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 30px rgba(255, 105, 180, 0.8);
+    }
+    
+    /* Animation Keyframes */
+    @keyframes colorChange {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .birthday-name h1 {
+        font-size: 3rem;
+      }
+      
+      .birthday-name h2 {
+        font-size: 1.8rem;
+      }
+      
+      .gallery-item {
+        width: 250px;
+        height: 250px;
+      }
+      
+      .video-player {
+        height: 300px;
+      }
+      
+      .final-message {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div class="preloader">
+    <div class="preloader-content">
+      <h2>Loading Birthday Surprise...</h2>
+      <div class="loading-bar">
+        <div class="loading-progress" id="loading-progress"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div id="particles-js"></div>
+    
+    <!-- Birthday Name -->
+    <div class="birthday-name" id="birthday-name">
+      <h1>Happy Birthday!</h1>
+      <h2>My Amazing Best Friend</h2>
+    </div>
+    
+    <!-- Cake Section -->
+    <div class="cake-section" id="cake-section">
+      <div class="cake-container">
+        <div class="cake"></div>
+        <div class="cake-top"></div>
+        <div class="candle"></div>
+        <div class="flame"></div>
+      </div>
+      <h2 style="margin-top: 40px; color: #ff69b4;">Make a wish!</h2>
+    </div>
+    
+    <!-- Gallery Section -->
+    <div class="gallery-section" id="gallery-section">
+      <div class="gallery-title">
+        <h2>Our Memories Together</h2>
+        <p>The best moments we've shared</p>
+      </div>
+      
+      <div class="gallery-container" id="gallery-container">
+        <!-- Images will be dynamically added with JavaScript -->
+        <div class="gallery-item">
+          <img src="Sneha/1.jpg" alt="Memory 1">
+        </div>
+        <div class="gallery-item">
+          <img src="Sneha/2.jpg" alt="Memory 2">
+        </div>
+        <div class="gallery-item">
+          <img src="Sneha/3.jpg" alt="Memory 3">
+        </div>
+        <div class="gallery-item">
+          <img src="Sneha/7.jpg" alt="Memory 4">
+        </div>
+        <div class="gallery-item">
+          <img src="Sneha/4.jpg" alt="Memory 5">
+        </div>
+        <div class="gallery-item">
+          <img src="Sneha/5.jpg" alt="Memory 6">
+        </div>
+        <div class="gallery-item">
+          <img src="Sneha/10.jpg" alt="Memory 7">
+        </div>
+        <div class="gallery-item">
+          <img src="Sneha/8.jpg" alt="Memory 8">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Message Section -->
+    <div class="message-section" id="message-section">
+      <div class="message-title">
+        <h2>A Special Message For You</h2>
+        <p>From the heart</p>
+      </div>
+      
+      <div class="message-container" id="message-container">
+        <div class="message-text">
+          <p>To my incredible best friend,</p>
+          <br>
+          <p>Today is not just another day, it's a celebration of the amazing person you are. From the day we met, you've filled my life with laughter, joy, and unforgettable memories.</p>
+          <br>
+          <p>Through all the ups and downs, you've been my rock. Your kindness, your strength, and your beautiful spirit inspire me every day. The way you face challenges with grace and celebrate victories with pure joy makes you truly special.</p>
+          <br>
+          <p>This birthday marks another chapter in your incredible journey, and I'm so grateful to be part of your story. I promise to be there for all the adventures that await you in this new year of your life.</p>
+          <br>
+          <p>May this year bring you everything your heart desires - success in your dreams, peace in your soul, and happiness in abundance. You deserve all the wonderful things life has to offer.</p>
+          <br>
+          <p>Here's to celebrating you today and always!</p>
+          <br>
+          <p>With all my love,</p>
+        </div>
+        <div class="signature">Your Best Friend</div>
+      </div>
+    </div>
+    
+    <!-- Video Section -->
+    <div class="video-section" id="video-section">
+      <div class="video-title">
+        <h2>A Video Just For You</h2>
+        <p>Press play for your special message</p>
+      </div>
+      
+      <div class="video-container" id="video-container">
+        <div class="video-player">
+          <!-- Replace this with actual video embed -->
+          <p>Your personalized video message would play here!<br>(Upload your video and link it here)</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Final Section -->
+    <div class="final-section" id="final-section">
+      <div class="final-message" id="final-message">Wishing You The Best Birthday Ever!</div>
+      <button class="restart-btn" id="restart-btn">Celebrate Again!</button>
+    </div>
+  </div>
+  <!-- Flying Images Container -->
+<div class="flying-images-container" id="flying-images">
+  <div class="flying-image"><img src="Sneha/1.jpg" alt="Flying 1" /></div>
+  <div class="flying-image"><img src="Sneha/7.jpg" alt="Flying 2" /></div>
+  <div class="flying-image"><img src="Sneha/3.jpg" alt="Flying 3" /></div>
+  <div class="flying-image"><img src="Sneha/4.jpg" alt="Flying 4" /></div>
+  <div class="flying-image"><img src="Sneha/5.jpg" alt="Flying 5" /></div>
+</div>
+
+<style>
+  .flying-images-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+  }
+
+  .flying-image {
+    position: absolute;
+    display: inline-block;
+    padding: 5px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    opacity: 0;
+    z-index: 6;
+    transform: translate(-50%, -50%) scale(0.5);
+    transition: all 0.5s ease;
+  }
+
+  .flying-image img {
+    display: block;
+    max-width: 250px;
+    max-height: 250px;
+    border-radius: 10px;
+    height: auto;
+    width: auto;
+  }
+</style>
+
+<script>
+  function animateFlyingImages() {
+    const flyingImages = document.querySelectorAll('.flying-image');
+
+    flyingImages.forEach((img, index) => {
+      const startX = Math.random() > 0.5 ? -100 : window.innerWidth + 100;
+      const startY = Math.random() * window.innerHeight;
+      const endX = startX < 0 ? window.innerWidth + 100 : -100;
+      const endY = Math.random() * window.innerHeight;
+
+      img.style.left = `${startX}px`;
+      img.style.top = `${startY}px`;
+
+      setTimeout(() => {
+        gsap.to(img, {
+          opacity: 0.9,
+          scale: 1,
+          duration: 1,
+          ease: "power2.inOut",
+          onComplete: function () {
+            gsap.to(img, {
+              left: endX,
+              top: endY,
+              duration: 8,
+              ease: "power1.inOut",
+              onComplete: function () {
+                gsap.to(img, {
+                  opacity: 0,
+                  scale: 0.5,
+                  duration: 1,
+                  onComplete: function () {
+                    setTimeout(() => {
+                      animateSingleFlyingImage(img);
+                    }, Math.random() * 5000);
+                  }
+                });
+              }
+            });
+          }
+        });
+      }, index * 2000);
+    });
+  }
+
+  function animateSingleFlyingImage(img) {
+    const startX = Math.random() > 0.5 ? -100 : window.innerWidth + 100;
+    const startY = Math.random() * window.innerHeight;
+    const endX = startX < 0 ? window.innerWidth + 100 : -100;
+    const endY = Math.random() * window.innerHeight;
+
+    img.style.left = `${startX}px`;
+    img.style.top = `${startY}px`;
+
+    gsap.to(img, {
+      opacity: 0.9,
+      scale: 1,
+      duration: 1,
+      ease: "power2.inOut",
+      onComplete: function () {
+        gsap.to(img, {
+          left: endX,
+          top: endY,
+          duration: 8,
+          ease: "power1.inOut",
+          onComplete: function () {
+            gsap.to(img, {
+              opacity: 0,
+              scale: 0.5,
+              duration: 1,
+              onComplete: function () {
+                setTimeout(() => {
+                  animateSingleFlyingImage(img);
+                }, Math.random() * 5000);
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    animateFlyingImages();
+  });
+</script>
+
+  <!-- Background Audio Player -->
+<audio id="bgMusic" loop>
+    <source src="https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.7/sounds/happybirthday.mp3" type="audio/mpeg">
+  </audio>
+  
+  <!-- Audio Control Button -->
+  <div class="audio-control">
+    <button id="audioToggle" class="audio-btn">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+  
+  <style>
+    /* Audio Controls */
+    .audio-control {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    
+    .audio-btn {
+      background: rgba(255, 105, 180, 0.7);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
+      transition: all 0.3s ease;
+    }
+    
+    .audio-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 105, 180, 0.9);
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Background music control
+      const bgMusic = document.getElementById('bgMusic');
+      const audioToggle = document.getElementById('audioToggle');
+      
+      if (audioToggle) {
+        audioToggle.addEventListener('click', function() {
+          if (bgMusic.paused) {
+            bgMusic.play();
+            audioToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+          } else {
+            bgMusic.pause();
+            audioToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+          }
+        });
+      }
+      
+      // Start music when user first interacts with the page
+      document.addEventListener('click', function startMusic() {
+        if (bgMusic) {
+          bgMusic.play().catch(err => console.log('Audio autoplay prevented'));
+        }
+        document.removeEventListener('click', startMusic);
+      }, { once: true });
+    });
+  </script>
+  <style>
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+    
+    /* Balloon styles */
+    .balloons-container {
+      position: fixed;
+      bottom: -100px;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 4;
+    }
+    
+    .balloon {
+      position: absolute;
+      width: 50px;
+      height: 65px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+      animation: float-up 15s linear infinite;
+    }
+    
+    .balloon:before {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: inherit;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+    
+    .balloon:after {
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 50px;
+      background: #fff;
+      opacity: 0.7;
+    }
+    
+    .balloon:nth-child(odd) {
+      animation-duration: 20s;
+    }
+    
+    .balloon:nth-child(3n) {
+      animation-duration: 18s;
+      animation-delay: 3s;
+    }
+    
+    .balloon:nth-child(5n) {
+      animation-duration: 22s;
+      animation-delay: 5s;
+    }
+    
+    @keyframes float-up {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        bottom: -100px;
+      }
+      50% {
+        opacity: 1;
+      }
+      75% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-1500px) rotate(35deg);
+        opacity: 0;
+      }
+    }
+    
+    /* Fireworks */
+    .firework {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px 2px;
+      animation: firework-anim 2s ease-out infinite;
+      opacity: 0;
+    }
+    
+    @keyframes firework-anim {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+        box-shadow: 0 0 0 0px rgba(255, 255, 255, 0);
+      }
+      30% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0;
+        box-shadow: 0 0 0 50px rgba(255, 255, 255, 0);
+      }
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Create confetti canvas
+      const confettiCanvas = document.createElement('canvas');
+      confettiCanvas.id = 'confetti-canvas';
+      document.body.appendChild(confettiCanvas);
+      
+      // Create balloon container
+      const balloonsContainer = document.createElement('div');
+      balloonsContainer.className = 'balloons-container';
+      document.body.appendChild(balloonsContainer);
+      
+      // Add balloons
+      const balloonColors = ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14', '#9400d3', '#ffff00'];
+      for (let i = 0; i < 25; i++) {
+        const balloon = document.createElement('div');
+        balloon.className = 'balloon';
+        balloon.style.backgroundColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+        balloon.style.left = `${Math.random() * 100}%`;
+        balloon.style.animationDelay = `${Math.random() * 15}s`;
+        balloonsContainer.appendChild(balloon);
+      }
+    });
+    
+    // Enhanced Confetti Function
+    function enhancedConfetti() {
+      if (typeof confetti === 'function') {
+        const duration = 8 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+        
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+        
+        const interval = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+          
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+          
+          const particleCount = 50 * (timeLeft / duration);
+          
+          // Launch confetti from both sides
+          confetti(Object.assign({}, defaults, { 
+            particleCount, 
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            colors: ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14']
+          }));
+          
+          confetti(Object.assign({}, defaults, { 
+            particleCount, 
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            colors: ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14']
+          }));
+        }, 250);
+      }
+    }
+    
+    // Super confetti blast
+    function superConfettiBlast() {
+      if (typeof confetti === 'function') {
+        const end = Date.now() + (5 * 1000);
+        
+        // Launch school pride confetti with random rotation
+        const colors = ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14'];
+        
+        (function frame() {
+          confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 80,
+            origin: { x: 0 },
+            colors: colors
+          });
+          
+          confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 80,
+            origin: { x: 1 },
+            colors: colors
+          });
+          
+          // Keep launching until time is up
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        }());
+        
+        // Launch cannon balls
+        (function launchCannon() {
+          setTimeout(function() {
+            confetti({
+              particleCount: 80,
+              startVelocity: 70,
+              spread: 100,
+              origin: { x: Math.random(), y: 0.9 },
+              colors: colors
+            });
+            
+            if (Date.now() < end) {
+              requestAnimationFrame(launchCannon);
+            }
+          }, 250);
+        }());
+      }
+    }
+    
+    // Create fireworks
+    function createFireworks() {
+      const fireworksContainer = document.createElement('div');
+      fireworksContainer.className = 'fireworks-container';
+      document.body.appendChild(fireworksContainer);
+      
+      const colors = ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14', '#9400d3'];
+      
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const x = Math.random() * window.innerWidth;
+          const y = Math.random() * (window.innerHeight / 2);
+          
+          for (let j = 0; j < 30; j++) {
+            setTimeout(() => {
+              const firework = document.createElement('div');
+              firework.className = 'firework';
+              firework.style.left = `${x}px`;
+              firework.style.top = `${y}px`;
+              firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+              fireworksContainer.appendChild(firework);
+              
+              setTimeout(() => {
+                firework.remove();
+              }, 2000);
+            }, j * 100);
+          }
+        }, i * 800);
+      }
+    }
+  </script>
+  <!-- Enhanced Cake Section with Simple Animation -->
+<div class="cake-section" id="cake-section">
+    <div class="cake-container">
+      <div class="cake" id="cake"></div>
+      <div class="cake-top"></div>
+      <div class="candle"></div>
+      <div class="flame" id="flame"></div>
+    </div>
+    <h2 style="margin-top: 40px; color: #ff69b4;">Make a wish!</h2>
+    <button class="cake-btn" id="blow-candle">Blow Candle</button>
+  </div>
+  
+  <style>
+    /* Enhanced Cake Section */
+    .cake-section {
+      padding-bottom: 50px;
+    }
+    
+    .cake-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+    
+    .cake {
+      position: relative;
+      width: 250px;
+      height: 200px;
+      background: linear-gradient(to top, #f8b0cf, #ffcce0);
+      border-radius: 50% 50% 0 0;
+      margin: 0 auto;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+      overflow: hidden;
+    }
+    
+    .cake-top {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 250px;
+      height: 20px;
+      background-color: #ffcce0;
+      border-radius: 50% 50% 0 0;
+    }
+    
+    .candle {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 60px;
+      background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+      border-radius: 5px;
+    }
+    
+    .flame {
+      position: absolute;
+      top: -70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 30px;
+      background: linear-gradient(to top, #ff9933, #ffcc00);
+      border-radius: 50% 50% 20% 20%;
+      box-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
+      animation: flame 1s infinite alternate;
+    }
+    
+    .cake-btn {
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      margin-top: 30px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+    }
+    
+    .cake-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+    }
+    
+    /* Enhanced Animations */
+    @keyframes flame {
+      0% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.1); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Simple candle blow functionality
+      const blowCandleBtn = document.getElementById('blow-candle');
+      const flame = document.getElementById('flame');
+      
+      if (blowCandleBtn && flame) {
+        blowCandleBtn.addEventListener('click', function() {
+          // Extinguish flame
+          gsap.to(flame, {
+            opacity: 0,
+            scale: 0.5,
+            duration: 0.5,
+            ease: "power2.in",
+            onComplete: function() {
+              // Launch confetti
+              if (typeof enhancedConfetti === 'function') {
+                enhancedConfetti();
+              }
+            }
+          });
+        });
+      }
+    });
+  </script>
+  <script>
+    // Preloader
+    window.addEventListener('load', function() {
+      const progress = document.getElementById('loading-progress');
+      let width = 0;
+      const interval = setInterval(function() {
+        if (width >= 100) {
+          clearInterval(interval);
+          setTimeout(function() {
+            document.querySelector('.preloader').style.display = 'none';
+            document.querySelector('.main-content').style.display = 'block';
+            
+            // Initialize particles.js right after preloader is hidden
+            initParticles();
+            
+            // Start birthday sequence 
+            startBirthdaySequence();
+          }, 500);
+        } else {
+          width += 1;
+          progress.style.width = width + '%';
+        }
+      }, 30);
+    });
+    
+    // Initialize Particles.js
+    function initParticles() {
+      if (typeof particlesJS !== 'undefined') {
+        particlesJS('particles-js', {
+          "particles": {
+            "number": {
+              "value": 100,
+              "density": {
+                "enable": true,
+                "value_area": 800
+              }
+            },
+            "color": {
+              "value": ["#ff69b4", "#00bfff", "#ff1493", "#ff8c00", "#39ff14"]
+            },
+            "shape": {
+              "type": ["circle", "star", "triangle"],
+              "stroke": {
+                "width": 0,
+                "color": "#000000"
+              },
+              "polygon": {
+                "nb_sides": 5
+              }
+            },
+            "opacity": {
+              "value": 0.7,
+              "random": true,
+              "anim": {
+                "enable": true,
+                "speed": 1,
+                "opacity_min": 0.1,
+                "sync": false
+              }
+            },
+            "size": {
+              "value": 5,
+              "random": true,
+              "anim": {
+                "enable": true,
+                "speed": 4,
+                "size_min": 0.3,
+                "sync": false
+              }
+            },
+            "line_linked": {
+              "enable": true,
+              "distance": 150,
+              "color": "#ffffff",
+              "opacity": 0.4,
+              "width": 1
+            },
+            "move": {
+              "enable": true,
+              "speed": 3,
+              "direction": "none",
+              "random": true,
+              "straight": false,
+              "out_mode": "out",
+              "bounce": false,
+              "attract": {
+                "enable": false,
+                "rotateX": 600,
+                "rotateY": 1200
+              }
+            }
+          },
+          "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+              "onhover": {
+                "enable": true,
+                "mode": "bubble"
+              },
+              "onclick": {
+                "enable": true,
+                "mode": "push"
+              },
+              "resize": true
+            },
+            "modes": {
+              "grab": {
+                "distance": 400,
+                "line_linked": {
+                  "opacity": 1
+                }
+              },
+              "bubble": {
+                "distance": 200,
+                "size": 6,
+                "duration": 2,
+                "opacity": 0.8,
+                "speed": 3
+              },
+              "repulse": {
+                "distance": 200,
+                "duration": 0.4
+              },
+              "push": {
+                "particles_nb": 4
+              },
+              "remove": {
+                "particles_nb": 2
+              }
+            }
+          },
+          "retina_detect": true
+        });
+        console.log("Particles.js initialized");
+      } else {
+        console.error("Particles.js not loaded");
+      }
+    }
+    
+    // Birthday Sequence
+    function startBirthdaySequence() {
+      // Show Birthday Name with animation
+      const birthdayName = document.getElementById('birthday-name');
+      gsap.to(birthdayName, {
+        opacity: 1,
+        duration: 2,
+        ease: "power2.inOut",
+        onComplete: function() {
+          // Trigger confetti
+          launchConfetti();
+          
+          // Wait and then move to cake section
+          setTimeout(function() {
+            gsap.to(birthdayName, {
+              opacity: 0,
+              duration: 1,
+              onComplete: function() {
+                birthdayName.style.display = 'none';
+                document.getElementById('cake-section').style.display = 'block';
+                
+                // After showing cake, move to gallery section
+                setTimeout(function() {
+                  document.getElementById('cake-section').style.display = 'none';
+                  document.getElementById('gallery-section').style.display = 'block';
+                  animateGallery();
+                }, 4000);
+              }
+            });
+          }, 4000);
+        }
+      });
+    }
+    
+    // Animate Gallery
+    function animateGallery() {
+      // Get all gallery items
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      
+      // Set up GSAP animations for gallery items
+      galleryItems.forEach((item, index) => {
+        gsap.to(item, {
+          opacity: 1,
+          duration: 0.8,
+          delay: index * 0.2,
+          ease: "power2.inOut"
+        });
+      });
+      
+      // After gallery animation, show message section
+      setTimeout(function() {
+        document.getElementById('gallery-section').style.display = 'none';
+        document.getElementById('message-section').style.display = 'block';
+        
+        // Animate message container
+        gsap.to(document.getElementById('message-container'), {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power2.out",
+          delay: 0.5
+        });
+        
+        // After message, show video section
+        setTimeout(function() {
+          document.getElementById('message-section').style.display = 'none';
+          document.getElementById('video-section').style.display = 'block';
+          
+          // Animate video container
+          gsap.to(document.getElementById('video-container'), {
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            ease: "power2.out",
+            delay: 0.5,
+            onComplete: function() {
+              // After video, show final section
+              setTimeout(function() {
+                document.getElementById('video-section').style.display = 'none';
+                document.getElementById('final-section').style.display = 'block';
+                
+                // Animate final message and button
+                gsap.to(document.getElementById('final-message'), {
+                  opacity: 1,
+                  duration: 1,
+                  ease: "power2.out",
+                  delay: 0.5
+                });
+                
+                gsap.to(document.getElementById('restart-btn'), {
+                  opacity: 1,
+                  duration: 1,
+                  ease: "power2.out",
+                  delay: 1.5,
+                  onComplete: function() {
+                    // Final confetti blast
+                    launchConfetti();
+                  }
+                });
+              }, 10000); // Show final section after 10 seconds
+            }
+          });
+        }, 15000); // Show video section after 15 seconds
+      }, 10000); // Show message section after 10 seconds
+    }
+    
+    // Confetti Function
+    function launchConfetti() {
+      if (typeof confetti === 'function') {
+        const count = 200;
+        const defaults = {
+          origin: { y: 0.7 }
+        };
+        
+        function fire(particleRatio, opts) {
+          confetti({
+            ...defaults,
+            ...opts,
+            particleCount: Math.floor(count * particleRatio)
+          });
+        }
+        
+        fire(0.25, {
+          spread: 26,
+          startVelocity: 55,
+          colors: ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14']
+        });
+        
+        fire(0.2, {
+          spread: 60,
+          colors: ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14']
+        });
+        
+        fire(0.35, {
+          spread: 100,
+          decay: 0.91,
+          colors: ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14']
+        });
+        
+        fire(0.1, {
+          spread: 120,
+          startVelocity: 25,
+          decay: 0.92,
+          colors: ['#ff69b4', '#00bfff', '#ff1493', '#ff8c00', '#39ff14']
+        });
+      } else {
+        console.error("Confetti library not loaded");
+      }
+    }
+    
+    // Restart Button
+    document.getElementById('restart-btn').addEventListener('click', function() {
+      window.location.reload();
+    });
+    
+    // Add dynamic image animations
+    function animateImagesSequentially() {
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      
+      galleryItems.forEach((item, index) => {
+        setTimeout(() => {
+          item.style.transform = 'scale(1.05)';
+          setTimeout(() => {
+            item.style.transform = 'scale(1)';
+          }, 500);
+        }, index * 1000);
+      });
+    }
+  </script>
+  
+</body>
+</html>
